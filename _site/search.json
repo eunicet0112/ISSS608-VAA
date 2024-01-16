@@ -12,5 +12,26 @@
     "title": "About",
     "section": "",
     "text": "About this site\n\n1 + 1\n\n[1] 2"
+  },
+  {
+    "objectID": "In_Class_Exercise/In_Class_Ex01/In_Class_Ex01.html",
+    "href": "In_Class_Exercise/In_Class_Ex01/In_Class_Ex01.html",
+    "title": "In-Class Exercise 1: Now You See It!",
+    "section": "",
+    "text": "In this hands-on exercise, two R packages will be used:\n\ntidyverse\nhaven\n\nThe code chunk used is as follows:\n\npacman::p_load(tidyverse, haven)"
+  },
+  {
+    "objectID": "In_Class_Exercise/In_Class_Ex01/In_Class_Ex01.html#loading-r-packages",
+    "href": "In_Class_Exercise/In_Class_Ex01/In_Class_Ex01.html#loading-r-packages",
+    "title": "In-Class Exercise 1: Now You See It!",
+    "section": "",
+    "text": "In this hands-on exercise, two R packages will be used:\n\ntidyverse\nhaven\n\nThe code chunk used is as follows:\n\npacman::p_load(tidyverse, haven)"
+  },
+  {
+    "objectID": "In_Class_Exercise/In_Class_Ex01/In_Class_Ex01.html#importing-pisa-data",
+    "href": "In_Class_Exercise/In_Class_Ex01/In_Class_Ex01.html#importing-pisa-data",
+    "title": "In-Class Exercise 1: Now You See It!",
+    "section": "Importing PISA Data",
+    "text": "Importing PISA Data\nThe code chunk below uses read_sas() function of haven to import PISA data into the R environment.\n#| eval: false was used to prevent the code chunk from running.\n\nstu_qqq &lt;- read_sas(\"Data/cy08msp_stu_qqq.sas7bdat\")\n\nThe code chunk below uses the filter() function of dplyr to retrieve records from Singapore (SGP) only.\n\nstu_qqq_SG &lt;- stu_qqq %&gt;% \n  filter(CNT == \"SGP\")\n\nThe code chunks below uses write_rds() and read_rds() to save and read the records from Singapore in R format.\n\nwrite_rds(stu_qqq_SG, \n          \"Data/stu_qqq_SG.rds\")\n\n\nstu_qqq_SG &lt;- read_rds(\"data/stu_qqq_SG.rds\")"
   }
 ]

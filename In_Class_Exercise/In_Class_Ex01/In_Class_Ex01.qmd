@@ -1,0 +1,54 @@
+---
+title: "In-Class Exercise 1: Now You See It!"
+
+date: "January 13, 2024"
+date-modified: "last-modified"
+execute:
+  eval: true
+  echo: true
+  warning: false
+---
+
+## Loading R Packages
+
+In this hands-on exercise, two R packages will be used:
+
+-   [tidyverse](https://www.tidyverse.org/)
+
+-   [haven](https://haven.tidyverse.org/)
+
+The code chunk used is as follows:
+
+```{r}
+pacman::p_load(tidyverse, haven)
+```
+
+## Importing PISA Data
+
+The code chunk below uses [`read_sas()`](https://haven.tidyverse.org/reference/read_sas.html) function of [`haven`](https://haven.tidyverse.org/) to import PISA data into the R environment.
+
+`#| eval: false` was used to prevent the code chunk from running.
+
+```{r}
+#| eval: false
+stu_qqq <- read_sas("Data/cy08msp_stu_qqq.sas7bdat")
+```
+
+The code chunk below uses the [`filter()`](https://dplyr.tidyverse.org/reference/filter.html) function of [`dplyr`](https://dplyr.tidyverse.org/) to retrieve records from Singapore (SGP) only.
+
+```{r}
+#| eval: false
+stu_qqq_SG <- stu_qqq %>% 
+  filter(CNT == "SGP")
+```
+
+The code chunks below uses `write_rds()` and `read_rds()` to save and read the records from Singapore in R format.
+```{r}
+#| eval: false
+write_rds(stu_qqq_SG, 
+          "Data/stu_qqq_SG.rds")
+```
+
+```{r}
+stu_qqq_SG <- read_rds("data/stu_qqq_SG.rds")
+```
