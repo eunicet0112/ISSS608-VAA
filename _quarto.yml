@@ -12,7 +12,7 @@ website:
       - text: "Hands-On Exercises"
         menu: 
           - text: "Hands-on Exercise 1"
-            href: "Hands_On_Exercise/Hands_On_Ex01/Hands-on_Ex01.html"
+            href: "Hands_On_Exercise/Hands_On_Ex01/Hands_On_Ex01.html"
     right: 
       - href: index.qmd
         text: Home
