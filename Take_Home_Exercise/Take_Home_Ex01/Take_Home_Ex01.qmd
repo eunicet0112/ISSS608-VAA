@@ -1,0 +1,227 @@
+---
+title: "Is Every School a Good School?"
+subtitle: In this exercise, exploratory data analysis methods will be conducted on the 2022 Programme for International Student Assessment (PISA) data.
+
+author: "Eunice Taam"
+date: "January 17, 2024"
+execute:
+  eval: true
+  echo: true
+  warning: false
+---
+
+### 1. Overview
+
+Is every school a good school? According to OECD education director Andreas Schleicher, Singapore "[managed to achieve excellence without wide differences between children from wealthy and disadvantaged families](https://www.bbc.com/news/education-38212070)". This spells good news for Singapore as its education system strives towards [every school being a good school](https://mothership.sg/2018/12/heng-swee-keat-education-minister/). Yet, public sentiments differs starkly from this. There is a strong belief that disparities continue to exist between elite and neighbourhood schools, between students from higher and lower socioeconomic status, and between students from immigrant and non-immigrant families.
+
+In this short exercise, we will study the 2022 Programme for International Student Assessment (PISA) data to reveal the following:
+
+-   the distribution of Singapore students' performance in Mathematics, Reading and Science; and
+-   the relationship between the aforementioned performances with schools, gender and socioeconomic status of the students.
+
+### 2. Preliminary Set-Up
+
+#### 2.1 Loading Relevant R Packages
+
+The following code chunk uses the `pacman::p_load()` function to install and load the relevant R packages:
+
+```{r}
+pacman::p_load(haven, tidyverse, ggplot2, e1071)
+```
+
+#### 2.2 Importing PISA Dataset
+
+The dataset provided for this exercise is extremely large with over 600,000 records from students globally. For the purpose of our task, we will filter the dataset to only include records of students from Singapore (with country code "SGP"). The resultant dataset `stu_sg` has 6606 records.
+
+The data dictionary of all 1279 variables can be found in the [PISA 2022 Database Codebook](https://www.oecd.org/pisa/data/2022database/).
+
+```{r}
+#| eval: false
+stu_qqq <- read_sas("Data/cy08msp_stu_qqq.sas7bdat")
+stu_sg <- stu_qqq %>% filter(CNT == "SGP")
+write_rds(stu_sg, "Data/stu_SG.rds")
+```
+
+```{r}
+stu_sg <- read_rds("data/stu_sg.rds")
+```
+
+### 3. Distribution of Performance of Singapore Students
+
+In this section, the distribution of the performance of students in three subjects, namely Mathematics, Reading and Science, will be studied. PISA reports student performance through [plausible values](https://www.oecd-ilibrary.org/docserver/9789264056275-7-en.pdf?expires=1705616814&id=id&accname=guest&checksum=F9D6A33712A565EF7F98479D2C240B6D) (PV), which can be defined as random values from the posterior distributions. PISA analysts have indicated that there is [no substantial differences](https://www.mdpi.com/2227-7390/9/13/1579#B34-mathematics-09-01579) in using one or all 10 available plausible values in a large sample. Therefore, we will be using **Plausible Value 5**(PV5) for all subjects in our subsequent analysis.
+
+The distributions for each subject will be visualised using violin plots, which can be considered a combination of box plots and kernel density plots. A violin plot was chosen to visualise the distribution of performance scores as it shows the summary statistics and the full distribution of the data.
+
+[Proficiency scales](https://www.oecd.org/pisa/pisa-for-development/pisafordevelopment2018technicalreport/PISA-D%20TR%20Chapter%2015%20-%20Proficiency%20Scale%20Construction%20-%20final.pdf), designed by PISA to facilitate reporting of general population-level results rather than results for individual students, were incorporated into the plots as well. The proficiency scales categorises scores into six levels based on subject-specific thresholds, with students in Level 1 being the least proficient in the subject and students in Level 6 being the most proficient. Students scoring below Level 2 are considered low-performing while students scoring at Level 5 or above are considered high-performing. These levels are reflected in the plots through its background colours. Each performance band is shaded a different colour using `geom_rect()` based on its lower and upper bound provided by PISA.
+
+::: callout-tip
+## Design Considerations for Violin Plot
+
+-   Plotting of the performance bands using `geom_rect()` has to precede all other plots to ensure that it is set as the background of the plot.
+-   By default, `geom_violin()` sets *trim=TRUE* and the tails of the violins are trimmed. It was thus set to *FALSE* to ensure the entire range of performance scores is included in the plot.
+-   The five-number summary statistics (minimum, first quartile, median, third quartile and maximum in black font) and the mean (in blue font) are displayed on the plot for greater clarity.
+:::
+
+#### 3.1 Distribution of Performance in Mathematics
+
+The code chunk below defines the performance bands based on the lower and upper bound for scores as stipulated by [PISA](https://www.oecd.org/pisa/pisa-for-development/pisafordevelopment2018technicalreport/PISA-D%20TR%20Chapter%2015%20-%20Proficiency%20Scale%20Construction%20-%20final.pdf).
+
+```{r}
+rects_math <- data.frame(ystart = c(46, 420.07, 482.38, 544.68, 606.99, 669.30), 
+                    yend = c(420.07, 482.38, 544.68, 606.99, 669.30, 950),
+                    Levels = c("Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6"))
+```
+
+The code chunk below plots the distribution of Mathematics scores for Singapore students.
+
+```{r}
+ggplot(data=stu_sg, aes(x=CNTRYID, y=as.numeric(PV5MATH))) + 
+  
+  # Adding background rectangle shading to mark out performance bands
+  geom_rect(data=rects_math,
+            aes(ymin=as.numeric(ystart), ymax=as.numeric(yend), xmin=-Inf, xmax=Inf, fill=Levels),
+            inherit.aes=FALSE, alpha=0.15) +
+  
+  
+  # Adding axis labels, title and subtitle
+  labs(x="", y="PV5 Scores for Mathematics",
+       title="Mathematics Scores of Students", 
+       subtitle="\n Mean score labelled in blue. Minimum, quantiles and maximum labelled in black.") +
+  
+  # Adding violin plot
+  geom_violin(trim=FALSE, color="red", alpha=0) + 
+  
+  # Adding boxplot
+  geom_boxplot(width=0.1, color="black", alpha=0) + 
+  
+  # Adding summary statistic annotations
+  stat_summary(geom="text", fun.y=quantile, 
+               aes(label=sprintf("%1.1f", ..y..)),
+               position=position_nudge(x=0.15), size=3) +
+  
+  # Adding mean annotation
+  stat_summary(geom="point", fun.y="mean", color="blue", fill="blue", size=2, shape=21) +
+  stat_summary(geom="text", fun.y="mean", color="blue", 
+               aes(label=sprintf("%1.1f", ..y..)),
+               position=position_nudge(x=0.09), size=3) + 
+
+  # Setting x-axis limits as CNTRYID was used as x-variable arbitrarily - all records have CTRYID of 702
+  scale_x_continuous(limits=c(701.5, 702.5)) +
+  
+  coord_flip() + 
+  theme(axis.title.y=element_blank(), axis.text.y=element_blank(), axis.ticks.y=element_blank())
+```
+
+::: callout-note
+## Insights on Mathematics Performance
+
+-   The mean score for Mathematics is 573.4 while the median score is 580.0. Both scores fall within Level 4 on the Proficiency Scale, indicating that most students in Singapore are moderately proficient in Mathematics.
+
+-   The distribution displays a slight left skew (skewness = -0.246 using `skewness()`). With the peak or mode of the distribution lying towards the right, there is a larger number of students with performance scores that are closer to the higher end.
+
+-   The lower bound of Level 5 proficiency of 606.99 lies between the median (580.0) and the upper quartile (647.3). This indicates that a rather substantial portion (albeit less than 50%) of students are top performers in Mathematics.
+:::
+
+#### 3.2 Distribution of Performance in Science
+
+Using the same approach as Section 3.1, the violin plot was generated for Science scores.
+
+```{r}
+#| code-fold: true
+rects_sci <- data.frame(ystart = c(39, 409.54, 484.14, 558.73, 633.33, 707.93), 
+                    yend = c(409.54, 484.14, 558.73, 633.33, 707.93, 924),
+                    Levels = c("Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6"))
+
+ggplot(data=stu_sg, aes(x=CNTRYID, y=as.numeric(PV5SCIE))) + 
+  
+  # Adding background rectangle shading to mark out performance bands
+  geom_rect(data=rects_sci,
+            aes(ymin=as.numeric(ystart), ymax=as.numeric(yend), xmin=-Inf, xmax=Inf, fill=Levels),
+            inherit.aes=FALSE, alpha=0.15) +
+  
+  
+  # Adding axis labels, title and subtitle
+  labs(x="", y="PV5 Scores for Science",
+       title="Science Scores of Students", 
+       subtitle="\n Mean score labelled in blue. Minimum, quantiles and maximum labelled in black.") +
+  
+  # Adding violin plot
+  geom_violin(trim=FALSE, color="red", alpha=0) + 
+  
+  # Adding boxplot
+  geom_boxplot(width=0.1, color="black", alpha=0) + 
+  
+  # Adding summary statistic annotations
+  stat_summary(geom="text", fun.y=quantile, 
+               aes(label=sprintf("%1.1f", ..y..)),
+               position=position_nudge(x=0.15), size=3) +
+  
+  # Adding mean annotation
+  stat_summary(geom="point", fun.y="mean", color="blue", fill="blue", size=2, shape=21) +
+  stat_summary(geom="text", fun.y="mean", color="blue", 
+               aes(label=sprintf("%1.1f", ..y..)),
+               position=position_nudge(x=0.09), size=3) + 
+
+  # Setting x-axis limits as CNTRYID was used as x-variable arbitrarily - all records have CTRYID of 702
+  scale_x_continuous(limits=c(701.5, 702.5)) +
+  
+  coord_flip() + 
+  theme(axis.title.y=element_blank(), axis.text.y=element_blank(), axis.ticks.y=element_blank())
+```
+
+::: callout-note
+## Insights on Science Performance
+
+-   The mean score for Science is 561.5 while the median score is 569.7. Both scores fall within Level 4 on the Proficiency Scale, indicating that most students in Singapore are moderately proficient in Science.
+
+-   The distribution displays a slight left skew (skewness = -0.297 using `skewness()`). With the peak or mode of the distribution lying towards the right, there is a larger number of students with performance scores that are closer to the higher end.
+
+-   Around 25% of students attained scores more than or equal to 632.1. With the score point range starting from 633.33 for Level 5, slightly less than 25% of Singapore students are top performers in science.
+:::
+
+#### 3.3 Distribution of Performance in Reading
+
+Using the same approach as Section 3.1, the violin plot was generated for Reading scores.
+
+```{r}
+#| code-fold: true
+rects_read <- data.frame(ystart = c(0, 407.47, 480.18, 552.89, 625.61, 698.32), 
+                    yend = c(407.47, 480.18, 552.89, 625.61, 698.32, 938),
+                    Levels = c("Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6"))
+
+ggplot(data=stu_sg, aes(x=CNTRYID, y=as.numeric(PV5READ))) + 
+  
+  # Adding background rectangle shading to mark out performance bands
+  geom_rect(data=rects_sci,
+            aes(ymin=as.numeric(ystart), ymax=as.numeric(yend), xmin=-Inf, xmax=Inf, fill=Levels),
+            inherit.aes=FALSE, alpha=0.15) +
+  
+  
+  # Adding axis labels, title and subtitle
+  labs(x="", y="PV5 Scores for Reading",
+       title="Science Scores of Reading", 
+       subtitle="\n Mean score labelled in blue. Minimum, quantiles and maximum labelled in black.") +
+  
+  # Adding violin plot
+  geom_violin(trim=FALSE, color="red", alpha=0) + 
+  
+  # Adding boxplot
+  geom_boxplot(width=0.1, color="black", alpha=0) + 
+  
+  # Adding summary statistic annotations
+  stat_summary(geom="text", fun.y=quantile, 
+               aes(label=sprintf("%1.1f", ..y..)),
+               position=position_nudge(x=0.15), size=3) +
+  
+  # Adding mean annotation
+  stat_summary(geom="point", fun.y="mean", color="blue", fill="blue", size=2, shape=21) +
+  stat_summary(geom="text", fun.y="mean", color="blue", 
+               aes(label=sprintf("%1.1f", ..y..)),
+               position=position_nudge(x=0.09), size=3) + 
+
+  # Setting x-axis limits as CNTRYID was used as x-variable arbitrarily - all records have CTRYID of 702
+  scale_x_continuous(limits=c(701.5, 702.5)) +
+  
+  coord_flip() + 
+  theme(axis.title.y=element_blank(), axis.text.y=element_blank(), axis.ticks.y=element_blank())
+```
