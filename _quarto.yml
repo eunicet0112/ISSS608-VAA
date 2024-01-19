@@ -13,19 +13,12 @@ website:
         menu: 
           - text: "Hands-on Exercise 1"
             href: "Hands_On_Exercise/Hands_On_Ex01/Hands_On_Ex01.html"
-<<<<<<< HEAD
     right: 
       - href: index.qmd
         text: Home
       - about.qmd
-=======
           - text: "Hands-On Exercise 2"
             href: "Hands_On_Exercise/Hands_On_Ex02/Hands_On_Ex02.html"
-      - text: "Take-Home Exercises"
-        menu: 
-          - text: "Take-Home Exercise 1"
-            href: "Take_Home_Exercise/Take_Home_Ex01/Take_Home_Ex01.html"
->>>>>>> 74b8fdc (commit hands-on exercise 2)
 
 format:
   html:
