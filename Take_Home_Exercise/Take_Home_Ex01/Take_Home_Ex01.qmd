@@ -618,6 +618,7 @@ In particular, we will focus on Group 1 and Group 4 as they are at the extreme e
 
 ```{r}
 #| code-fold: TRUE
+#| eval: FALSE
 
 # Preparing dataset
 g1_math <- math_sch %>% filter(group=="Group 1")
@@ -662,10 +663,11 @@ venn.diagram(
 
 From the Venn Diagram, we can see a significant overlap of schools in Group 1. Each subject has 41 schools in Group 1. Out of the 41 schools, 31 schools belong to Group 1 for all three subjects. This means that students with the lowest performance in all three subjects are largely concentrated in the same schools.
 
-## Group 4
+## Group 4 Schools
 
 ```{r}
 #| code-fold: TRUE
+#| eval: FALSE
 
 # Preparing dataset
 g4_math <- math_sch %>% filter(group=="Group 4")
@@ -711,7 +713,13 @@ venn.diagram(
 From the Venn Diagram, we can see a even more significant overlap of schools in Group 4. Each subject has 41 schools in Group 4. Out of the 41 schools, 37 schools belong to Group 4 for all three subjects. This means that students with the highest performance in all three subjects are largely concentrated in the same schools.
 :::
 
-We can thus conclude that students with the lowest performance across all subjects are largely concentrated in the same schools. Students with the highest performance across all subjects are also largely concentrated in the same schools.
+::: callout-tip
+## Insights on Relationship between Schools and Overall Performance
+
+-   Students with the lowest performance across all subjects are largely concentrated in the same schools
+
+-   Students with the highest performance across all subjects are also largely concentrated in the same schools
+:::
 
 ## 4.2 Relationship between Performance and Gender
 
