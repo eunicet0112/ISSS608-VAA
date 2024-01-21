@@ -28,7 +28,8 @@ The following code chunk uses the `pacman::p_load()` function to install and loa
 ```{r}
 pacman::p_load(haven, tidyverse, ggplot2, e1071, dplyr, 
                forcats, rstatix,kableExtra, ggstatsplot, 
-               hrbrthemes, tidyr, viridis, ggridges, nortest)
+               hrbrthemes, tidyr, viridis, ggridges, nortest,
+               tm, proustr, VennDiagram)
 ```
 
 ## 2.2 Importing PISA Dataset
@@ -610,7 +611,107 @@ The p-values of the Kruskal-Wallis test and all pairwise tests are less than 0.0
 
 From Sections 4.1.2 to 4.1.4, we observed that performance for all subjects increases from Group 1 through to 4. It may be the case that different schools specialise in different subjects, which does not seem to be a completely unfavourable scenario as students can choose their schools based on their passion in certain areas. This would mean that the schools in each group differs from subject to subject. However, if the composition of schools in each group remain relatively stable across subjects, it would mean that high performance is clustered within a select few schools and lower performance is more prevalent in other select few schools. This may be bad news as it shows that students may face huge stress to gain entry in such Group 4 schools while students from Group 4 schools may be labelled as having poor academic performance right from the get-go.
 
-In particular, we will focus on Group 1 and Group 4 as they are at the extreme ends of the performance spectrum.
+In particular, we will focus on Group 1 and Group 4 as they are at the extreme ends of the performance spectrum. A Venn Diagram will be used to visualise the number of schools that are common between each pair of school groups. This gives a clear visualisation of how many schools each pair of school groups have in common. The `venn.diagram()` function from the `VennDiagram` package will be used.
+
+::: panel-tabset
+## Group 1 Schools 
+
+```{r}
+#| code-fold: TRUE
+
+# Preparing dataset
+g1_math <- math_sch %>% filter(group=="Group 1")
+g1_math$subject <- "Math"
+g1_sci <- sci_sch %>% filter(group=="Group 1")
+g1_sci$subject <- "Science"
+g1_read <- read_sch %>% filter(group=="Group 1")
+g1_read$subject <- "Reading"
+g1 <- rbind(g1_math[, c(1,4)], g1_sci[, c(1,4)], g1_read[, c(1,4)])
+
+# Plotting Venn Diagram
+venn.diagram(
+  x=list(
+    g1 %>% filter(subject=="Math") %>% select(CNTSCHID) %>% unlist(),
+    g1 %>% filter(subject=="Science") %>% select(CNTSCHID) %>% unlist(),
+    g1 %>% filter(subject=="Reading") %>% select(CNTSCHID) %>% unlist()
+  ), 
+  category.names=c("Math", "Science", "Reading"), 
+  filename="venn_g1.png", 
+  output = TRUE ,
+          imagetype="png" ,
+          height = 480 , 
+          width = 480 , 
+          resolution = 300,
+          compression = "lzw",
+          lwd = 1,
+          col=c("#440154ff", '#21908dff', '#fde725ff'),
+          fill = c(alpha("#440154ff",0.3), alpha('#21908dff',0.3), alpha('#fde725ff',0.3)),
+          cex = 0.5,
+          fontfamily = "sans",
+          cat.cex = 0.3,
+          cat.default.pos = "outer",
+          cat.pos = c(-27, 27, 135),
+          cat.dist = c(0.055, 0.055, 0.085),
+          cat.fontfamily = "sans",
+          cat.col = c("#440154ff", '#21908dff', '#fde725ff'),
+          rotation = 1
+)
+```
+
+![Venn Diagram of Group 1 Schools](images/venn_g1.png){fig-align="center"}
+
+From the Venn Diagram, we can see a significant overlap of schools in Group 1. Each subject has 41 schools in Group 1. Out of the 41 schools, 31 schools belong to Group 1 for all three subjects. This means that students with the lowest performance in all three subjects are largely concentrated in the same schools.
+
+## Group 4
+
+```{r}
+#| code-fold: TRUE
+
+# Preparing dataset
+g4_math <- math_sch %>% filter(group=="Group 4")
+g4_math$subject <- "Math"
+g4_sci <- sci_sch %>% filter(group=="Group 4")
+g4_sci$subject <- "Science"
+g4_read <- read_sch %>% filter(group=="Group 4")
+g4_read$subject <- "Reading"
+g4 <- rbind(g4_math[, c(1,4)], g4_sci[, c(1,4)], g4_read[, c(1,4)])
+
+# Plotting Venn Diagram
+venn.diagram(
+  x=list(
+    g4 %>% filter(subject=="Math") %>% select(CNTSCHID) %>% unlist(),
+    g4 %>% filter(subject=="Science") %>% select(CNTSCHID) %>% unlist(),
+    g4 %>% filter(subject=="Reading") %>% select(CNTSCHID) %>% unlist()
+  ), 
+  category.names=c("Math", "Science", "Reading"), 
+  filename="venn_g4.png", 
+  output = TRUE ,
+          imagetype="png" ,
+          height = 480 , 
+          width = 480 , 
+          resolution = 300,
+          compression = "lzw",
+          lwd = 1,
+          col=c("#440154ff", '#21908dff', '#fde725ff'),
+          fill = c(alpha("#440154ff",0.3), alpha('#21908dff',0.3), alpha('#fde725ff',0.3)),
+          cex = 0.5,
+          fontfamily = "sans",
+          cat.cex = 0.3,
+          cat.default.pos = "outer",
+          cat.pos = c(-27, 27, 135),
+          cat.dist = c(0.055, 0.055, 0.085),
+          cat.fontfamily = "sans",
+          cat.col = c("#440154ff", '#21908dff', '#fde725ff'),
+          rotation = 1
+)
+```
+
+![Venn Diagram of Group 4 Schools](images/venn_g4.png){fig-align="center"}
+
+From the Venn Diagram, we can see a even more significant overlap of schools in Group 4. Each subject has 41 schools in Group 4. Out of the 41 schools, 37 schools belong to Group 4 for all three subjects. This means that students with the highest performance in all three subjects are largely concentrated in the same schools.
+:::
+
+We can thus conclude that students with the lowest performance across all subjects are largely concentrated in the same schools. Students with the highest performance across all subjects are also largely concentrated in the same schools.
 
 ## 4.2 Relationship between Performance and Gender
 
@@ -895,6 +996,8 @@ In this exercise, we used statistical plots to understand and analyse the perfor
 In Section 4, we explored the relationship between performance and schools, gender and socio-economic status. Statistical tests were also conducted to confirm the findings. The following findings were made:
 
 -   Schools affect how students in perform in all subjects, with Group 1 schools recording the best performance and Group 4 schools recording the worst performance.
+
+-   Students with the lowest performance across all subjects are largely concentrated in the same schools. The same can be said about students with the highest performance across all subjects.
 
 -   Females perform better than their male counterparts in Reading while males perform better than their female counterparts in Mathematics and Science.
 
