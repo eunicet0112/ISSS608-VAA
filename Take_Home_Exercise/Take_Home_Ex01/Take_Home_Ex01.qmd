@@ -614,7 +614,7 @@ From Sections 4.1.2 to 4.1.4, we observed that performance for all subjects incr
 In particular, we will focus on Group 1 and Group 4 as they are at the extreme ends of the performance spectrum. A Venn Diagram will be used to visualise the number of schools that are common between each pair of school groups. This gives a clear visualisation of how many schools each pair of school groups have in common. The `venn.diagram()` function from the `VennDiagram` package will be used.
 
 ::: panel-tabset
-## Group 1 Schools 
+## Group 1 Schools
 
 ```{r}
 #| code-fold: TRUE
