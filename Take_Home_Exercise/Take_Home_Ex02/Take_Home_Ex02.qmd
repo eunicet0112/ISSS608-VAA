@@ -249,7 +249,7 @@ colnames(stu_qqq_SG_02)[3] = "Score"
 stu_qqq_SG_02 <- na.omit(stu_qqq_SG_02)
 ```
 
-## Code for Plotting 
+## Code for Plotting
 
 ```{r}
 plot2 <- 
