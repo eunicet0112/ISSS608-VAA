@@ -165,6 +165,8 @@ The interactive plot below has a few notable features:
 
 -   **Mean Temperature Line**: The mean daily temperature (horizontal dark blue line) is plotted to show the average Mean Daily Temperature for each year, with the exact average value annotated in dark blue. This allows viewers to accurately identify the mean daily temperatures across all years to understand the overall change in daily temperatures over the years.
 
+-   **Linear Regression Line with Uncertainty Visualisation**: The forecasted daily temperatures till 2100 developed using linear regression was plotted as the red line. The uncertainty of the forecast was estimated using the linear regression projection of the daily minimum and maximum temperatures and was plotted as the red shaded area around the linear regression line. The minimum, mean and maximum temperatures for 31/12/2103 was annotated in red to aid in the validation of the claim of "daily mean temperature is projected to increase by 1.4°C to 4.6°C by 2100".
+
 -   **Interactivity**: The plot is interactive as it allows viewers to zoom in on specific time periods of interests using the slider at the bottom of the plot.
 
 ::: callout-note
