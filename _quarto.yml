@@ -27,6 +27,8 @@ website:
             href: "Take_Home_Exercise/Take_Home_Ex02/Take_Home_Ex02.html"
           - text: "Take-Home Exercise 3"
             href: "Take_Home_Exercise/Take_Home_Ex03/Take_Home_Ex03.html"
+          - text: "Take-Home Exercise 4"
+            href: "Take_Home_Exercise/Take_Home_Ex04/Take_Home_Ex04.html"
             
     right: 
       - href: index.qmd
