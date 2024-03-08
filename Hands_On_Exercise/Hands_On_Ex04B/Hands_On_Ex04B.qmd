@@ -1,0 +1,248 @@
+---
+title: "Visualising Statistical Analysis"
+
+date: "Feburary 2, 2024"
+execute:
+  eval: true
+  echo: true
+  warning: false
+---
+
+## **1.1 Learning Outcome**
+
+In this hands-on exercise, you will gain hands-on experience on using:
+
+-   ggstatsplot package to create visual graphics with rich statistical information,
+
+-   performance package to visualise model diagnostics, and
+
+-   parameters package to visualise model parameters
+
+## **1.2 Visual Statistical Analysis with ggstatsplot**
+
+[**ggstatsplot**](https://indrajeetpatil.github.io/ggstatsplot/) is an extension of [**ggplot2**](https://ggplot2.tidyverse.org/) package for creating graphics with details from statistical tests included in the information-rich plots themselves.
+
+-   To provide alternative statistical inference methods by default.
+
+-   To follow best practices for statistical reporting. For all statistical tests reported in the plots, the default template abides by the [APA](https://my.ilstu.edu/~jhkahn/apastats.html) gold standard for statistical reporting. For example, here are results from a robust t-test:
+
+## **1.3 Getting Started**
+
+### **1.3.1 Installing and launching R packages**
+
+In this exercise, **ggstatsplot** and **tidyverse** will be used.
+
+```{r}
+pacman::p_load(ggstatsplot, tidyverse)
+```
+
+### **1.3.2 Importing data**
+
+For the purpose of this exercise, *Exam_data.csv* will be used.
+
+```{r}
+exam <- read_csv("Data/Exam_data.csv")
+```
+
+### **1.3.3 One-sample test: *gghistostats()* method**
+
+In the code chunk below, [*gghistostats()*](https://indrajeetpatil.github.io/ggstatsplot/reference/gghistostats.html) is used to to build an visual of one-sample test on English scores.
+
+```{r}
+set.seed(1234)
+
+gghistostats(
+  data = exam,
+  x = ENGLISH,
+  type = "bayes",
+  test.value = 60,
+  xlab = "English scores"
+)
+```
+
+Default information: - statistical details - Bayes Factor - sample sizes - distribution summary
+
+### **1.3.4 Unpacking the Bayes Factor**
+
+-   A Bayes factor is the ratio of the likelihood of one particular hypothesis to the likelihood of another. It can be interpreted as a measure of the strength of evidence in favor of one theory among two competing theories.
+
+-   That’s because the Bayes factor gives us a way to evaluate the data in favor of a null hypothesis, and to use external information to do so. It tells us what the weight of the evidence is in favor of a given hypothesis.
+
+-   When we are comparing two hypotheses, H1 (the alternate hypothesis) and H0 (the null hypothesis), the Bayes Factor is often written as B10. It can be defined mathematically as
+
+    ![What is the Bayes Factor anyway? - Dan Oehm \| Gradient Descending](data:image/png;base64,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){alt="What is the Bayes Factor anyway? - Dan Oehm | Gradient Descending"}
+
+-   The [**Schwarz criterion**](https://www.statisticshowto.com/bayesian-information-criterion/) is one of the easiest ways to calculate rough approximation of the Bayes Factor.
+
+### **1.3.5 How to interpret Bayes Factor**
+
+A **Bayes Factor** can be any positive number. One of the most common interpretations is this one—first proposed by Harold Jeffereys (1961) and slightly modified by [Lee and Wagenmakers](https://www-tandfonline-com.libproxy.smu.edu.sg/doi/pdf/10.1080/00031305.1999.10474443?needAccess=true) in 2013:
+
+![](https://www.researchgate.net/publication/262876321/figure/tbl4/AS:667715555565583@1536207202637/nterpretation-of-Bayes-factors-suggested-by-Wagenmakers-et-al-2011.png){alt="Interpretation of Bayes factors suggested by Wagenmakers et al. (2011) |  Download Table"}
+
+### **1.3.6 Two-sample mean test: *ggbetweenstats()***
+
+In the code chunk below, [*ggbetweenstats()*](https://indrajeetpatil.github.io/ggstatsplot/reference/ggbetweenstats.html) is used to build a visual for two-sample mean test of Maths scores by gender.
+
+```{r}
+ggbetweenstats(
+  data = exam,
+  x = GENDER, 
+  y = MATHS,
+  type = "np",
+  messages = FALSE
+)
+```
+
+\
+Default information: - statistical details - Bayes Factor - sample sizes - distribution summary
+
+### **1.3.7 Oneway ANOVA Test: *ggbetweenstats()* method**
+
+In the code chunk below, [*ggbetweenstats()*](https://indrajeetpatil.github.io/ggstatsplot/reference/ggbetweenstats.html) is used to build a visual for One-way ANOVA test on English score by race.
+
+```{r}
+ggbetweenstats(
+  data = exam,
+  x = RACE, 
+  y = ENGLISH,
+  type = "p",
+  mean.ci = TRUE, 
+  pairwise.comparisons = TRUE, 
+  pairwise.display = "s",
+  p.adjust.method = "fdr",
+  messages = FALSE
+)
+```
+
+-   “ns” → only non-significant
+
+-   “s” → only significant
+
+-   “all” → everything
+
+### **1.3.8 Significant Test of Correlation: *ggscatterstats()***
+
+In the code chunk below, [*ggscatterstats()*](https://indrajeetpatil.github.io/ggstatsplot/reference/ggscatterstats.html) is used to build a visual for Significant Test of Correlation between Maths scores and English scores.
+
+```{r}
+ggscatterstats(
+  data = exam,
+  x = MATHS,
+  y = ENGLISH,
+  marginal = FALSE,
+  )
+```
+
+### **1.3.9 Significant Test of Association (Depedence) : *ggbarstats()* methods**
+
+In the code chunk below, the Maths scores is binned into a 4-class variable by using [*cut()*](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/cut).
+
+```{r}
+exam1 <- exam %>% 
+  mutate(MATHS_bins = 
+           cut(MATHS, 
+               breaks = c(0,60,75,85,100))
+)
+```
+
+In this code chunk below [*ggbarstats()*](https://indrajeetpatil.github.io/ggstatsplot/reference/ggbarstats.html) is used to build a visual for Significant Test of Association
+
+```{r}
+ggbarstats(exam1, 
+           x = MATHS_bins, 
+           y = GENDER)
+```
+
+## **1.4 Visualising Models**
+
+In this section, you will learn how to visualise model diagnostic and model parameters by using parameters package.
+
+-   Toyota Corolla case study will be used. The purpose of study is to build a model to discover factors affecting prices of used-cars by taking into consideration a set of explanatory variables.
+
+### **1.4.1 Installing and loading the required libraries**
+
+```{r}
+pacman::p_load(readxl, performance, parameters, see)
+```
+
+### **1.4.2 Importing Excel file: readxl methods**
+
+In the code chunk below, [*read_xls()*](https://readxl.tidyverse.org/reference/read_excel.html) of [**readxl**](https://readxl.tidyverse.org/) package is used to import the data worksheet of `ToyotaCorolla.xls` workbook into R.
+
+```{r}
+car_resale <- read_xls("Data/ToyotaCorolla.xls", 
+                       "data")
+car_resale
+```
+
+Notice that the output object `car_resale` is a tibble data frame.
+
+### **1.4.3 Multiple Regression Model using lm()**
+
+The code chunk below is used to calibrate a multiple linear regression model by using *lm()* of Base Stats of R.
+
+```{r}
+model <- lm(Price ~ Age_08_04 + Mfg_Year + KM + 
+              Weight + Guarantee_Period, data = car_resale)
+model
+```
+
+### **1.4.4 Model Diagnostic: checking for multicolinearity:**
+
+In the code chunk, [*check_collinearity()*](https://easystats.github.io/performance/reference/check_collinearity.html) of [**performance**](https://easystats.github.io/performance/) package.
+
+```{r}
+check_collinearity(model)
+```
+
+```{r}
+check_c <- check_collinearity(model)
+plot(check_c)
+```
+
+### **1.4.5 Model Diagnostic: checking normality assumption**
+
+In the code chunk, [*check_normality()*](https://easystats.github.io/performance/reference/check_normality.html) of [**performance**](https://easystats.github.io/performance/) package.
+
+```{r}
+model1 <- lm(Price ~ Age_08_04 + KM + 
+              Weight + Guarantee_Period, data = car_resale)
+
+check_n <- check_normality(model1)
+plot(check_n)
+```
+
+### **1.4.6 Model Diagnostic: Check model for homogeneity of variances**
+
+In the code chunk, [*check_heteroscedasticity()*](https://easystats.github.io/performance/reference/check_heteroscedasticity.html) of [**performance**](https://easystats.github.io/performance/) package.
+
+```{r}
+check_h <- check_heteroscedasticity(model1)
+plot(check_h)
+```
+
+### **1.4.7 Model Diagnostic: Complete check**
+
+We can also perform the complete by using [*check_model()*](https://easystats.github.io/performance/reference/check_model.html).
+
+```{r}
+check_model(model1)
+```
+
+### **1.4.8 Visualising Regression Parameters: see methods**
+
+In the code below, plot() of see package and parameters() of parameters package is used to visualise the parameters of a regression model.
+
+```{r}
+plot(parameters(model1))
+```
+
+### **1.4.9 Visualising Regression Parameters: *ggcoefstats()* methods**
+
+In the code below, [*ggcoefstats()*](https://indrajeetpatil.github.io/ggstatsplot/reference/ggcoefstats.html) of ggstatsplot package to visualise the parameters of a regression model.
+
+```{r}
+ggcoefstats(model1, 
+            output = "plot")
+```
