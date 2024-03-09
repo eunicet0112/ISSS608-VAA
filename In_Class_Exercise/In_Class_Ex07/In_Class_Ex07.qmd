@@ -79,3 +79,14 @@ tm_shape(mpsz2019) +
 ```{r}
 tmap_mode("plot")
 ```
+
+## **3.1. Interpolation Method**
+
+```{r}
+grid <- terra::rast(mpsz2019,
+                    nrow = 690,
+                    ncols = 1075)
+
+xy <- terra::xyFromCell(grid,
+                        1:ncell(grid))
+```
