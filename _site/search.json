@@ -992,5 +992,33 @@
     "title": "Visualising Geospatial Point Data",
     "section": "4.4 I have a twin brothers :)",
     "text": "4.4 I have a twin brothers :)\nAn impressive and little-know feature of tmap’s view mode is that it also works with faceted plots. The argument sync in tm_facets() can be used in this case to produce multiple maps with synchronised zoom and pan settings.\n\ntm_shape(sgpools_sf) +\n  tm_bubbles(col = \"OUTLET TYPE\", \n          size = \"Gp1Gp2 Winnings\",\n          border.col = \"black\",\n          border.lwd = 1) +\n  tm_facets(by= \"OUTLET TYPE\",\n            nrow = 1,\n            sync = TRUE)\n\n\n\n\n\n\n\n\n\n\n\n\n\nBefore you end the session, it is wiser to switch tmap’s Viewer back to plot mode by using the code chunk below.\n\ntmap_mode(\"plot\")"
+  },
+  {
+    "objectID": "In_Class_Exercise/In_Class_Ex07/In_Class_Ex07.html",
+    "href": "In_Class_Exercise/In_Class_Ex07/In_Class_Ex07.html",
+    "title": "In-Class Exercise 1: Now You See It!",
+    "section": "",
+    "text": "In this in-class exercise, we explore methods to interpolate rainfall data obtained from the Meteorological Service Singapore Website."
+  },
+  {
+    "objectID": "In_Class_Exercise/In_Class_Ex07/In_Class_Ex07.html#loading-relevant-packages",
+    "href": "In_Class_Exercise/In_Class_Ex07/In_Class_Ex07.html#loading-relevant-packages",
+    "title": "In-Class Exercise 1: Now You See It!",
+    "section": "2.1. Loading Relevant Packages",
+    "text": "2.1. Loading Relevant Packages\n\npacman::p_load(sf, terra, gstat, tmap,\n               viridis, tidyverse)"
+  },
+  {
+    "objectID": "In_Class_Exercise/In_Class_Ex07/In_Class_Ex07.html#loading-data",
+    "href": "In_Class_Exercise/In_Class_Ex07/In_Class_Ex07.html#loading-data",
+    "title": "In-Class Exercise 1: Now You See It!",
+    "section": "2.2. Loading Data",
+    "text": "2.2. Loading Data\n\n2.2.1. Import Aspatial Data\n\nrfstation &lt;- read_csv(\"Data/aspatial/RainfallStation.csv\")\n\nrfdata &lt;- read_csv(\"Data/aspatial/DAILYDATA_202402.csv\")\n\n\nrfdata &lt;- rfdata %&gt;%\n  select(c(1, 5)) %&gt;%\n  group_by(Station) %&gt;%\n  summarise(MonthSum = sum(`Daily Rainfall Total (mm)`)) %&gt;%\n  ungroup()\n\nrfdata\n\n# A tibble: 43 × 2\n   Station                 MonthSum\n   &lt;chr&gt;                      &lt;dbl&gt;\n 1 Admiralty                  154. \n 2 Ang Mo Kio                 150  \n 3 Botanic Garden             174. \n 4 Bukit Panjang              174. \n 5 Bukit Timah                162. \n 6 Buona Vista                131. \n 7 Changi                      60.2\n 8 Choa Chu Kang (Central)    188. \n 9 Choa Chu Kang (South)      208. \n10 Clementi                   163. \n# ℹ 33 more rows\n\n\n\nrfdata &lt;- rfdata %&gt;%\n  left_join(rfstation)\n\nrfdata\n\n# A tibble: 43 × 4\n   Station                 MonthSum Latitude Longitude\n   &lt;chr&gt;                      &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;\n 1 Admiralty                  154.      1.44      104.\n 2 Ang Mo Kio                 150       1.38      104.\n 3 Botanic Garden             174.      1.31      104.\n 4 Bukit Panjang              174.      1.38      104.\n 5 Bukit Timah                162.      1.32      104.\n 6 Buona Vista                131.      1.28      104.\n 7 Changi                      60.2     1.37      104.\n 8 Choa Chu Kang (Central)    188.      1.38      104.\n 9 Choa Chu Kang (South)      208.      1.37      104.\n10 Clementi                   163.      1.33      104.\n# ℹ 33 more rows\n\n\n\nrfdata_sf &lt;- st_as_sf(rfdata,\n                      coords = c(\"Longitude\",\n                                 \"Latitude\"),\n                      crs = 4326) %&gt;%\n  st_transform(crs = 3414)\n\n\n\n2.2.2. Import Geospatial Data\n\nmpsz2019 &lt;- st_read(dsn = \"data/geospatial\",\n                    layer = \"MPSZ-2019\") %&gt;%\n  st_transform(3414)\n\nReading layer `MPSZ-2019' from data source \n  `/Users/eunicetaam/eunicet0112/ISSS608-VAA/In_Class_Exercise/In_Class_Ex07/Data/geospatial' \n  using driver `ESRI Shapefile'\nSimple feature collection with 332 features and 6 fields\nGeometry type: MULTIPOLYGON\nDimension:     XY\nBounding box:  xmin: 103.6057 ymin: 1.158699 xmax: 104.0885 ymax: 1.470775\nGeodetic CRS:  WGS 84"
+  },
+  {
+    "objectID": "In_Class_Exercise/In_Class_Ex07/Data/geospatial/MPSZ-2019.html",
+    "href": "In_Class_Exercise/In_Class_Ex07/Data/geospatial/MPSZ-2019.html",
+    "title": "ISSS608-VAA",
+    "section": "",
+    "text": "&lt;!DOCTYPE qgis PUBLIC ‘http://mrcc.com/qgis.dtd’ ‘SYSTEM’&gt;     dataset\n\n\n        0 0     false"
   }
 ]
